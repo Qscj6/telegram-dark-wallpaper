@@ -21,10 +21,10 @@
       transition: background 0.6s ease;
     }
     .tw-mask {
-      -webkit-mask-repeat: repeat-y;
-      mask-repeat: repeat-y;
-      -webkit-mask-position: center var(--tw-pos-y, 50%);
-      mask-position: center var(--tw-pos-y, 50%);
+      -webkit-mask-repeat: repeat;
+      mask-repeat: repeat;
+      -webkit-mask-position: var(--tw-pos-x, 50%) var(--tw-pos-y, 50%);
+      mask-position: var(--tw-pos-x, 50%) var(--tw-pos-y, 50%);
       -webkit-mask-size: var(--tw-size) auto;
       mask-size: var(--tw-size) auto;
       -webkit-mask-image: var(--tw-image);
@@ -202,18 +202,21 @@ const PATTERNS = [
       return generateProceduralDarkPalette();
     }
 
-    function applyAmbientGlow(colors, posYPercent) {
+    function applyAmbientGlow(colors, posXPercent, posYPercent) {
       document.documentElement.style.setProperty('--amb-1', hexToRgba(colors[0], 0.08));
       document.documentElement.style.setProperty('--amb-2', hexToRgba(colors[2] || colors[1], 0.08));
+      document.documentElement.style.setProperty('--tw-pos-x', posXPercent + '%');
       document.documentElement.style.setProperty('--tw-pos-y', posYPercent + '%');
     }
 
     function buildRandomConfig() {
       const pat = pickRandomPattern();
       const pal = pickRandomDarkPalette();
-      const posYPercent = Math.floor(Math.random() * 101); // random vertical crop slice
-      const opacity = +(0.66 + Math.random() * 0.12).toFixed(2); // 0.66 - 0.78 crisp lines
-      applyAmbientGlow(pal.colors, posYPercent);
+      const posXPercent = Math.floor(Math.random() * 101);
+      const posYPercent = Math.floor(Math.random() * 101);
+      const sizePx = 460 + Math.floor(Math.random() * 101); // 460px - 560px refined desktop layout
+      const opacity = +(0.58 + Math.random() * 0.12).toFixed(2); // 0.58 - 0.70 luminous dark glow
+      applyAmbientGlow(pal.colors, posXPercent, posYPercent);
       return {
         pat,
         pal,
@@ -227,7 +230,7 @@ const PATTERNS = [
             image: pat.data,
             background: "transparent",
             blur: 0,
-            size: "100vw", // Full screen width = ZERO horizontal repetition
+            size: sizePx + "px",
             opacity: opacity,
             mask: true
           }
