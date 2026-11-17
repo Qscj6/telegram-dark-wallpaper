@@ -13,9 +13,18 @@
       background: #000000;
       user-select: none;
     }
+    body {
+      background:
+        radial-gradient(circle at 22% 24%, var(--amb-1, rgba(64, 205, 222, 0.08)), transparent 52%),
+        radial-gradient(circle at 78% 78%, var(--amb-2, rgba(172, 134, 237, 0.08)), transparent 52%),
+        #020306;
+      transition: background 0.6s ease;
+    }
     .tw-mask {
-      -webkit-mask: center repeat;
-      mask: center repeat;
+      -webkit-mask-repeat: repeat-y;
+      mask-repeat: repeat-y;
+      -webkit-mask-position: center var(--tw-pos-y, 50%);
+      mask-position: center var(--tw-pos-y, 50%);
       -webkit-mask-size: var(--tw-size) auto;
       mask-size: var(--tw-size) auto;
       -webkit-mask-image: var(--tw-image);
@@ -128,25 +137,31 @@ const PATTERNS = [
 ];
 
 
-    // Curated Dark-Series Palettes (designed to glow cleanly over #000000 at ~0.48-0.58 opacity)
+    // Curated Luminous Dark-Neon & Aurora Palettes (rich over #020306 obsidian background)
     const DARK_PALETTES = [
-      { name: "极夜极光", colors: ["#2b5876", "#4e4376", "#23a6d5", "#23d5ab"] },
-      { name: "暗夜紫晶", colors: ["#4f5bd5", "#8a2be2", "#c44569", "#546de5"] },
-      { name: "赛博霓虹", colors: ["#00d2ff", "#3a7bd5", "#9d50bb", "#6e48aa"] },
-      { name: "深海幽蓝", colors: ["#1e3c72", "#2a5298", "#38ef7d", "#11998e"] },
-      { name: "黑曜石余烬", colors: ["#8e2de2", "#c31432", "#f7971e", "#4a00e0"] },
-      { name: "东京夜色", colors: ["#7aa2f7", "#bb9af7", "#7dcfff", "#3d59a1"] },
-      { name: "暮光蔷薇", colors: ["#654ea3", "#eaafc8", "#b993d6", "#4b6cb7"] },
-      { name: "暗影森林", colors: ["#134e5e", "#71b280", "#2c7744", "#5a9367"] },
-      { name: "午夜星云", colors: ["#434343", "#527bdd", "#7c65a9", "#3c8ce7"] },
-      { name: "猩红魅影", colors: ["#870000", "#d63031", "#6c5ce7", "#a29bfe"] },
-      { name: "冰川暗流", colors: ["#2980b9", "#6dd5fa", "#536976", "#48c6ef"] },
-      { name: "德古拉暗夜", colors: ["#bd93f9", "#ff79c6", "#8be9fd", "#6272a4"] },
-      { name: "黑金流光", colors: ["#c99a3b", "#8a6d3b", "#d4af37", "#5c4d3c"] },
-      { name: "莫卡深空", colors: ["#89b4fa", "#cba6f7", "#f38ba8", "#74c7ec"] },
-      { name: "暗黑薄荷", colors: ["#0f9b8e", "#2b5876", "#4ecdc4", "#556270"] },
-      { name: "星际幻想", colors: ["#efd359", "#e984d8", "#ac86ed", "#40cdde"] }
+      { name: "赛博幻境", colors: ["#00f5d4", "#00bbf9", "#9b5de5", "#f15bb5"] },
+      { name: "星际流光", colors: ["#efd359", "#e984d8", "#ac86ed", "#40cdde"] },
+      { name: "极夜极光", colors: ["#38ef7d", "#00d2ff", "#5b86e5", "#7f53ac"] },
+      { name: "东京霓虹", colors: ["#7aa2f7", "#bb9af7", "#7dcfff", "#ff79c6"] },
+      { name: "暗夜紫晶", colors: ["#ff6ec7", "#c471ed", "#7f7fd5", "#6dd5fa"] },
+      { name: "深海萤火", colors: ["#2af598", "#009efd", "#4facfe", "#00f2fe"] },
+      { name: "暮光蔷薇", colors: ["#ff9a9e", "#f6416c", "#9b5de5", "#5f72bd"] },
+      { name: "落日余晖", colors: ["#ffbe0b", "#fb5607", "#ff006e", "#8338ec"] },
+      { name: "莫卡星空", colors: ["#89b4fa", "#cba6f7", "#f38ba8", "#74c7ec"] },
+      { name: "冰川极昼", colors: ["#48c6ef", "#6f86d6", "#a18cd1", "#8fd3f4"] },
+      { name: "香槟魅影", colors: ["#f6d365", "#fda085", "#e5a1d0", "#a18cd1"] },
+      { name: "黑金流光", colors: ["#ffe082", "#ffb74d", "#ff8a65", "#ffd54f"] },
+      { name: "德古拉夜", colors: ["#bd93f9", "#ff79c6", "#8be9fd", "#50fa7b"] },
+      { name: "翡翠极光", colors: ["#43e97b", "#38f9d7", "#4facfe", "#736efe"] }
     ];
+
+    function hexToRgba(hex, alpha) {
+      const h = hex.replace('#', '');
+      const r = parseInt(h.substring(0, 2), 16);
+      const g = parseInt(h.substring(2, 4), 16);
+      const b = parseInt(h.substring(4, 6), 16);
+      return 'rgba(' + r + ', ' + g + ', ' + b + ', ' + alpha + ')';
+    }
 
     function hslToHex(h, s, l) {
       h = ((h % 360) + 360) % 360;
@@ -161,24 +176,14 @@ const PATTERNS = [
 
     function generateProceduralDarkPalette() {
       const baseHue = Math.floor(Math.random() * 360);
-      const mode = Math.floor(Math.random() * 3);
-      let hues;
-      if (mode === 0) {
-        // Smooth analogous sweep (avoids muddy RGB mid-band cancellation)
-        hues = [baseHue, baseHue + 24, baseHue + 52, baseHue + 76];
-      } else if (mode === 1) {
-        // Dual-direction harmonious arc
-        hues = [baseHue, baseHue + 22, baseHue + 46, baseHue - 26];
-      } else {
-        // Deep jewel progression
-        hues = [baseHue, baseHue + 34, baseHue + 68, baseHue + 96];
-      }
-      const colors = hues.map(h => {
-        const sat = 52 + Math.random() * 30;  // 52% - 82%
-        const lit = 48 + Math.random() * 22;  // 48% - 70% (smooth dark-series glow on #000)
+      const step = 28 + Math.floor(Math.random() * 24); // 28 - 52 deg smooth transition
+      const hues = [baseHue, baseHue + step, baseHue + step * 2, baseHue + step * 3];
+      const colors = hues.map((h, idx) => {
+        const sat = 72 + Math.random() * 22;  // 72% - 94% vivid saturation
+        const lit = 58 + Math.random() * 16;  // 58% - 74% luminous over #020306
         return hslToHex(h, sat, lit);
       });
-      return { name: "随机暗色流光", colors };
+      return { name: "随机极光流彩", colors };
     }
 
     function pickRandomPattern() {
@@ -191,18 +196,24 @@ const PATTERNS = [
     }
 
     function pickRandomDarkPalette() {
-      // 50% curated dark-series palettes, 50% infinite procedural dark palettes
-      if (Math.random() < 0.5) {
+      if (Math.random() < 0.6) {
         return DARK_PALETTES[Math.floor(Math.random() * DARK_PALETTES.length)];
       }
       return generateProceduralDarkPalette();
     }
 
+    function applyAmbientGlow(colors, posYPercent) {
+      document.documentElement.style.setProperty('--amb-1', hexToRgba(colors[0], 0.08));
+      document.documentElement.style.setProperty('--amb-2', hexToRgba(colors[2] || colors[1], 0.08));
+      document.documentElement.style.setProperty('--tw-pos-y', posYPercent + '%');
+    }
+
     function buildRandomConfig() {
       const pat = pickRandomPattern();
       const pal = pickRandomDarkPalette();
-      const sizePx = 480 + Math.floor(Math.random() * 61); // 480px - 540px (16:9 desktop balanced)
-      const opacity = +(0.48 + Math.random() * 0.14).toFixed(2); // 0.48 - 0.62
+      const posYPercent = Math.floor(Math.random() * 101); // random vertical crop slice
+      const opacity = +(0.66 + Math.random() * 0.12).toFixed(2); // 0.66 - 0.78 crisp lines
+      applyAmbientGlow(pal.colors, posYPercent);
       return {
         pat,
         pal,
@@ -214,9 +225,9 @@ const PATTERNS = [
           colors: pal.colors,
           pattern: {
             image: pat.data,
-            background: "#000000",
+            background: "transparent",
             blur: 0,
-            size: sizePx + "px",
+            size: "100vw", // Full screen width = ZERO horizontal repetition
             opacity: opacity,
             mask: true
           }
