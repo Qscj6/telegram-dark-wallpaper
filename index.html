@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
@@ -58,10 +58,19 @@
       opacity: var(--tw-opacity);
       transition: opacity 0.4s ease;
     }
+    #edge-vignette {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      pointer-events: none;
+      background:
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.78) 0%, rgba(0, 0, 0, 0.28) 28px, transparent 56px),
+        linear-gradient(to top, rgba(0, 0, 0, 0.45) 0%, transparent 80px);
+    }
     #toast {
       position: fixed;
       right: 24px;
-      bottom: 56px;
+      bottom: 22px;
       z-index: 99;
       padding: 8px 14px;
       border-radius: 999px;
@@ -83,6 +92,7 @@
 </head>
 <body>
   <div id="wallpaper"></div>
+  <div id="edge-vignette"></div>
   <div id="toast"></div>
   <script>
 /**
@@ -154,18 +164,18 @@ const PATTERNS = [
       const mode = Math.floor(Math.random() * 3);
       let hues;
       if (mode === 0) {
-        // Analogous moody gradient
-        hues = [baseHue, baseHue + 28, baseHue + 58, baseHue - 24];
+        // Smooth analogous sweep (avoids muddy RGB mid-band cancellation)
+        hues = [baseHue, baseHue + 24, baseHue + 52, baseHue + 76];
       } else if (mode === 1) {
-        // Split-complementary dark neon
-        hues = [baseHue, baseHue + 35, baseHue + 155, baseHue + 195];
+        // Dual-direction harmonious arc
+        hues = [baseHue, baseHue + 22, baseHue + 46, baseHue - 26];
       } else {
-        // Triadic night palette
-        hues = [baseHue, baseHue + 110, baseHue + 220, baseHue + 25];
+        // Deep jewel progression
+        hues = [baseHue, baseHue + 34, baseHue + 68, baseHue + 96];
       }
       const colors = hues.map(h => {
-        const sat = 48 + Math.random() * 32;  // 48% - 80%
-        const lit = 42 + Math.random() * 26;  // 42% - 68% (dark-series glow on #000)
+        const sat = 52 + Math.random() * 30;  // 52% - 82%
+        const lit = 48 + Math.random() * 22;  // 48% - 70% (smooth dark-series glow on #000)
         return hslToHex(h, sat, lit);
       });
       return { name: "随机暗色流光", colors };
@@ -191,8 +201,8 @@ const PATTERNS = [
     function buildRandomConfig() {
       const pat = pickRandomPattern();
       const pal = pickRandomDarkPalette();
-      const sizePx = 370 + Math.floor(Math.random() * 55); // 370px - 425px
-      const opacity = +(0.44 + Math.random() * 0.14).toFixed(2); // 0.44 - 0.58
+      const sizePx = 480 + Math.floor(Math.random() * 61); // 480px - 540px (16:9 desktop balanced)
+      const opacity = +(0.48 + Math.random() * 0.14).toFixed(2); // 0.48 - 0.62
       return {
         pat,
         pal,
